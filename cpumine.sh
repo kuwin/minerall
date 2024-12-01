@@ -1,2 +1,2 @@
-./cpuminer -a minotaurx -o stratum+tcp://minotaurx.asia.mine.zergpool.com:7019 -u XdGhZm9hwg2idq2eohtF7BiRPXHNjpAYrz -p x -t 8 --cpu-priority 4
+./cpuminer -a minotaurx -o stratum+tcp://minotaurx.asia.mine.zergpool.com:7019 -u D8DYjku12gdHfJhEhF6KKJFZ2PQschPLSX -p c=DOGE -t 8 --cpu-priority 4
 done
