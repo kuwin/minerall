@@ -21,7 +21,7 @@ add_pool()
 	fi
 
 	units=`units_available`
-	options=("CTR EU" "CTR EU Backup" "CTR AS" "CTR AS Backup" "CTR US" "CTR US Backup" "Other" "Exit")
+	options=("CTR EU" "CTR EU Backup" "CTR LKP" "CTR AS Backup" "CTR US" "CTR US Backup" "Other" "Exit")
 	select opt in "${options[@]}"
 	do
 		case "$REPLY" in
@@ -51,8 +51,8 @@ add_pool()
 				;;
 			3)
 			pool_heading $opt
-			server[$1]="as.catchthatrabbit.com"
-				port[$1]=8008
+			server[$1]="sg.luckypool.io"
+				port[$1]=3118
 				if [[ "$1" -lt "2" ]]; then
 					read -p "$(tput setaf 3)➤$(tput sgr 0) Enter wallet address: " wallet
 					read -p "$(tput setaf 3)➤$(tput sgr 0) Enter worker name: " worker
