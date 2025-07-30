@@ -13,7 +13,7 @@ request_worker_name() {
 	echo "$(tput setaf 3)●$(tput sgr 0) Enter worker name. Choose format:"
 	echo "1) Plain name (alphanumeric and underscores/hyphens)"
 	echo "2) Fediverse user (e.g., _username_instance_tld-machineid)"
-	echo "3) Random (e.g., worker-34874)"
+	echo "3) Random (e.g., cm_Tminer)"
 	read -p "$(tput setaf 3)➤$(tput sgr 0) Select format (1, 2, or 3): " choice
 
 	case $choice in
