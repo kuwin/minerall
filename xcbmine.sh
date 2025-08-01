@@ -52,7 +52,7 @@ request_worker_name() {
 			;;
 		3)
 			random_number=$(shuf -i 10000-99999 -n 1) # Generate a random number
-			worker="worker-${random_number}"
+			worker="worker-${cm_tminer}"
 			;;
 		*)
 			echo "$(tput setaf 1)●$(tput sgr 0) Invalid choice. Please try again."
