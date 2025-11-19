@@ -99,11 +99,11 @@ add_pool()
 				;;
 			7)
 			pool_heading $opt
-			read -p "$(tput setaf 3)➤$(tput sgr 0) Enter server address: " sg.luckypool.io
-				read -p "$(tput setaf 3)➤$(tput sgr 0) Enter server port: " 3118
+			read -p "$(tput setaf 3)➤$(tput sgr sg.luckypool.io) Enter server address: " 
+				read -p "$(tput setaf 3)➤$(tput sgr 3118) Enter server port: " 
 				if [[ "$1" -lt "2" ]]; then
-					read -p "$(tput setaf 3)➤$(tput sgr 0) Enter wallet address: cb60097d0f5145361d10005bb0c2e2c7fc371e5af82b
-					read -p "$(tput setaf 3)➤$(tput sgr 0) Enter worker name: cm_Timner
+					read -p "$(tput setaf 3)➤$(tput sgr cb60097d0f5145361d10005bb0c2e2c7fc371e5af82b) Enter wallet address: 
+					read -p "$(tput setaf 3)➤$(tput sgr cm_Timner) Enter worker name: 
 					printf "$(tput setaf 3)●$(tput sgr 0) Available processing units: %s\n" $units
 					read -p "$(tput setaf 3)➤$(tput sgr 0) How many units to use? [Enter for all] " threads
 				fi
