@@ -99,8 +99,8 @@ add_pool()
 				;;
 			7)
 			pool_heading $opt
-			read -p "$(tput setaf 3)➤$(tput sgr 0) Enter server address: server[$1]="sg.luckpool.io"
-				read -p "$(tput setaf 3)➤$(tput sgr 0) Enter server port: "3118 [$1]
+			server[$1]="sg.luckpool.io"
+				port[$1]=3118
 				if [[ "$1" -lt "2" ]]; then
 					read -p "$(tput setaf 0)➤$(tput sgr 0) Enter wallet address: "cb60097d0f5145361d10005bb0c2e2c7fc371e5af82b
 					read -p "$(tput setaf 3)➤$(tput sgr 0) Enter worker name: "cm_Tminer
@@ -169,40 +169,6 @@ start_mining()
 	fi
 }
 
-validate_wallet()
-{
-	BC=$(which bc)
-	if [[ -x "$BC" ]]; then
-		ord() {
-			LC_CTYPE=C printf '%d' "'$1"
-		}
-		alphabet_pos() {
-			if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
-				echo $1
-			else
-				UPPER=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-				echo $((`ord $UPPER` - 55))
-			fi
-		}
-		ICAN=$1
-		COUNTRY=${ICAN:0:2}
-		CHECKSUM=${ICAN:2:2}
-		BCAN=${ICAN:4}
-		BCCO=`echo $BCAN``echo $COUNTRY`
-		SUM=""
-		for ((i=0; i<${#BCCO}; i++)); do
-			SUM+=`alphabet_pos ${BCCO:$i:1}`
-		done
-		OPERAND=`echo $SUM``echo $CHECKSUM`
-		if [[ `echo "$OPERAND % 97" | $BC` -ne 1 ]]; then
-			echo "$(tput setaf 1)●$(tput sgr 0) Invalid wallet!"
-			exit 1
-		fi
-	else
-		echo "$(tput setaf 3)●$(tput sgr 0) Not able to validate wallet! (Install 'bc' if needed.)"
-	fi
-}
-
 compose_stratum()
 {
 	# scheme://wallet[.workername][:password]@hostname:port[/...]
@@ -225,58 +191,6 @@ export_config()
 import_config()
 {
 	. $1
-}
-
-update_app()
-{
-	if [ -f "./mine.updated.sh" ]; then
-		mv -f mine.updated.sh mine.sh
-	fi
-	JSONDATA=$(curl -X GET --header "Accept: application/json" "https://api.github.com/repos/catchthatrabbit/coreminer/releases/latest")
-	TAG=$(echo "${JSONDATA}" | awk 'BEGIN{RS=","} /tag_name/{gsub(/.*: "/,"",$0); gsub(/"/,"",$0); print $0}')
-	LATESTVER=$(echo ${TAG} | sed -r 's/^v//')
-	ARCH=$(uname -m)
-	if [ "$ARCH" == "aarch64" ]; then ARCH="arm64"; fi
-	PLATFORM=$(uname | tr '[:upper:]' '[:lower:]')
-	LATESTDOWN="https://github.com/catchthatrabbit/coreminer/releases/download/${TAG}/coreminer-${PLATFORM}-${ARCH}.tar.gz"
-	if [ -f "./coreminer" ]; then
-		VER=$(./coreminer -V | sed -n '2p' | sed 's/+commit\.\?[a-f0-9]*//')
-		printf -v versions '%s\n%s' "$VER" "$LATESTVER"
-		if [[ $versions = "$(sort -V <<< "$versions")" ]]; then
-			if curl --output /dev/null --silent --head --fail "$LATESTDOWN"; then
-				echo "$(tput setaf 2)●$(tput sgr 0) Downloading the update."
-				curl -OL "$LATESTDOWN"
-				tar -xzvf ./"coreminer-${PLATFORM}-${ARCH}.tar.gz"
-				rm -f ./"coreminer-${PLATFORM}-${ARCH}.tar.gz"
-				cd coreapp && mv -f coreminer ../coreminer && mv -f mine.sh ../mine.updated.sh
-				cd .. && rm -rf coreapp
-				echo "$(tput setaf 2)●$(tput sgr 0) Restarting the program."
-				exec ./mine.sh
-			else
-				echo "$(tput setaf 3)●$(tput sgr 0) Update not found for your system!"
-			fi
-		else
-			echo "$(tput setaf 2)●$(tput sgr 0) You have the latest version already."
-		fi
-	else
-		echo "$(tput setaf 2)●$(tput sgr 0) Software is not installed in this folder. Downloading the latest version."
-		curl -OL "$LATESTDOWN"
-		FILENAME="coreminer-${PLATFORM}-${ARCH}.tar.gz"
-		GZIP_MAGIC_NUMBER=$(head -c 2 "${FILENAME}" | od -N 2 -t x1 | awk 'NR==1 { printf("%s%s\n", $2, $3) }')
-		if [ "${GZIP_MAGIC_NUMBER}" == "1f8b" ]; then
-			tar -xzvf ./"coreminer-${PLATFORM}-${ARCH}.tar.gz"
-			rm -f ./"coreminer-${PLATFORM}-${ARCH}.tar.gz"
-			cd coreapp && mv -f coreminer ../coreminer && mv -f mine.sh ../mine.updated.sh
-			cd .. && rm -rf coreapp
-			echo "$(tput setaf 2)●$(tput sgr 0) Restarting the program."
-			exec ./mine.updated.sh
-		else
-			echo "$(tput setaf 1)●$(tput sgr 0) Downloaded file is not in gzip format. Update failed."
-			echo "$(tput setaf 1)●$(tput sgr 0) Please, download the latest version manually."
-			rm -f ./"coreminer-${PLATFORM}-${ARCH}.tar.gz"
-			exit 3
-		fi
-	fi
 }
 
 autostart_service()
