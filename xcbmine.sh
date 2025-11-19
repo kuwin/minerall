@@ -169,40 +169,6 @@ start_mining()
 	fi
 }
 
-validate_wallet()
-{
-	BC=$(which bc)
-	if [[ -x "$BC" ]]; then
-		ord() {
-			LC_CTYPE=C printf '%d' "'$1"
-		}
-		alphabet_pos() {
-			if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
-				echo $1
-			else
-				UPPER=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-				echo $((`ord $UPPER` - 55))
-			fi
-		}
-		ICAN=$1
-		COUNTRY=${ICAN:0:2}
-		CHECKSUM=${ICAN:2:2}
-		BCAN=${ICAN:4}
-		BCCO=`echo $BCAN``echo $COUNTRY`
-		SUM=""
-		for ((i=0; i<${#BCCO}; i++)); do
-			SUM+=`alphabet_pos ${BCCO:$i:1}`
-		done
-		OPERAND=`echo $SUM``echo $CHECKSUM`
-		if [[ `echo "$OPERAND % 97" | $BC` -ne 1 ]]; then
-			echo "$(tput setaf 1)●$(tput sgr 0) Invalid wallet!"
-			exit 0
-		fi
-	else
-		echo "$(tput setaf 3)●$(tput sgr 0) Not able to validate wallet! (Install 'bc' if needed.)"
-	fi
-}
-
 compose_stratum()
 {
 	# scheme://wallet[.workername][:password]@hostname:port[/...]
